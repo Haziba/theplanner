@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: The Planner API
+Resources:
+  Me:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./endpoints/meals
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /meals
+            Method: any
