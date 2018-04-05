@@ -15,3 +15,15 @@ Resources:
           Properties:
             Path: /meals
             Method: any
+  Ingredients:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./endpoints/ingredients
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /ingredients
+            Method: any
