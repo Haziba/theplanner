@@ -30,22 +30,24 @@ func handleRequest(context context.Context,
 }
 
 func post(request events.APIGatewayProxyRequest, ingredientService ingredient.IngredientService) (events.APIGatewayProxyResponse, error) {
-	var m models.Ingredient
+	var i []models.Ingredient
 
-	err := json.Unmarshal([]byte(request.Body), &m)
+	err := json.Unmarshal([]byte(request.Body), &i)
 
 	if err != nil {
 		log.Printf("error unmarshalling ingredient: %v\n", err)
 		return helpers.CreateBadRequestResponse()
 	}
 
-	m, err = ingredientService.CreateIngredient(m)
-	if err != nil {
-		log.Printf("error creating ingredient: %v\n", err)
-		return helpers.CreateBadRequestResponse()
+	for _, ingredient := range i {
+		ingredient, err = ingredientService.CreateIngredient(ingredient)
+		if err != nil {
+			log.Printf("error creating ingredient: %v\n", err)
+			return helpers.CreateBadRequestResponse()
+		}
 	}
 
-	data, err := json.Marshal(m)
+	data, err := json.Marshal(i)
 	if err != nil {
 		log.Printf("error marshalling ingredient: %v\n", err)
 		return helpers.CreateInternalServerErrorResponse()
