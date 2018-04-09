@@ -3,6 +3,7 @@ version: '2'
 services:
     db:
         image: dwmkerr/dynamodb
+        command: -sharedDb
         hostname: db
         ports:
             - "8000:8000"
