@@ -22,7 +22,9 @@ func NewDynamoDBIngredientService(db *dynamodb.DynamoDB) DynamoDBIngredientServi
 }
 
 func (s DynamoDBIngredientService) CreateIngredient(i models.Ingredient) (models.Ingredient, error) {
-	i.Id = uuid.NewV4().String()
+	if i.Id == "" {
+		i.Id = uuid.NewV4().String()
+	}
 
 	item, err := dynamodbattribute.MarshalMap(i)
 	if err != nil {
