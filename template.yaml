@@ -27,3 +27,15 @@ Resources:
           Properties:
             Path: /ingredients
             Method: any
+  MealPlanner:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./endpoints/meal-planner
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /meal-planner
+            Method: any
