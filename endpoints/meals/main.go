@@ -31,7 +31,7 @@ func handleRequest(context context.Context,
 }
 
 func post(request events.APIGatewayProxyRequest, mealService meal.MealService) (events.APIGatewayProxyResponse, error) {
-	var m models.Meal
+	var m []models.Meal
 
 	err := json.Unmarshal([]byte(request.Body), &m)
 
@@ -40,10 +40,12 @@ func post(request events.APIGatewayProxyRequest, mealService meal.MealService) (
 		return helpers.CreateBadRequestResponse()
 	}
 
-	m, err = mealService.CreateMeal(m)
-	if err != nil {
-		log.Printf("error creating meal: %v\n", err)
-		return helpers.CreateBadRequestResponse()
+	for _, meal := range m {
+		meal, err = mealService.CreateMeal(meal)
+		if err != nil {
+			log.Printf("error creating meal: %v\n", err)
+			return helpers.CreateBadRequestResponse()
+		}
 	}
 
 	data, err := json.Marshal(m)
