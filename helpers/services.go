@@ -1,10 +1,10 @@
 package helpers
 
 import (
-	"github.com/haziba/theplanner/services/ingredient"
-	idb "github.com/haziba/theplanner/services/ingredient/dynamodb"
-	"github.com/haziba/theplanner/services/meal"
-	mdb "github.com/haziba/theplanner/services/meal/dynamodb"
+	"github.com/haziba/theplanner/services/food/ingredient"
+	idb "github.com/haziba/theplanner/services/food/ingredient/dynamodb"
+	"github.com/haziba/theplanner/services/food/meal"
+	mdb "github.com/haziba/theplanner/services/food/meal/dynamodb"
 	"github.com/pkg/errors"
 )
 

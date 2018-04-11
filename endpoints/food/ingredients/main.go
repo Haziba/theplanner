@@ -4,53 +4,52 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"math/rand"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	helpers "github.com/haziba/theplanner/helpers"
-	"github.com/haziba/theplanner/models"
-	"github.com/haziba/theplanner/services/meal"
+	"github.com/haziba/theplanner/models/food"
+	"github.com/haziba/theplanner/services/food/ingredient"
 )
 
 func handleRequest(context context.Context,
 	request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	mealService, err := helpers.CreateMealService()
+	ingredientService, err := helpers.CreateIngredientService()
 	if err != nil {
-		log.Printf("error creating meal service: %v\n", err)
+		log.Printf("error creating ingredient service: %v\n", err)
 		return helpers.CreateInternalServerErrorResponse()
 	}
 
 	if request.HTTPMethod == "POST" {
-		return post(request, mealService)
+		return post(request, ingredientService)
 	}
 
-	return get(mealService)
+	return get(ingredientService)
 }
 
-func post(request events.APIGatewayProxyRequest, mealService meal.MealService) (events.APIGatewayProxyResponse, error) {
-	var m []models.Meal
+func post(request events.APIGatewayProxyRequest, ingredientService ingredient.IngredientService) (events.APIGatewayProxyResponse, error) {
+	var i []models.Ingredient
 
-	err := json.Unmarshal([]byte(request.Body), &m)
+	err := json.Unmarshal([]byte(request.Body), &i)
 
 	if err != nil {
-		log.Printf("error unmarshalling meal: %v\n", err)
+		log.Printf("error unmarshalling ingredient: %v\n", err)
 		return helpers.CreateBadRequestResponse()
 	}
 
-	for _, meal := range m {
-		meal, err = mealService.CreateMeal(meal)
+	for _, ingredient := range i {
+		ingredient, err = ingredientService.CreateIngredient(ingredient)
 		if err != nil {
-			log.Printf("error creating meal: %v\n", err)
+			log.Printf("error creating ingredient: %v\n", err)
 			return helpers.CreateBadRequestResponse()
 		}
 	}
 
-	data, err := json.Marshal(m)
+	data, err := json.Marshal(i)
 	if err != nil {
-		log.Printf("error marshalling meal: %v\n", err)
+		log.Printf("error marshalling ingredient: %v\n", err)
 		return helpers.CreateInternalServerErrorResponse()
 	}
 
@@ -60,16 +59,16 @@ func post(request events.APIGatewayProxyRequest, mealService meal.MealService) (
 	}, nil
 }
 
-func get(mealService meal.MealService) (events.APIGatewayProxyResponse, error) {
-	meals, err := mealService.GetAllMeals()
+func get(ingredientService ingredient.IngredientService) (events.APIGatewayProxyResponse, error) {
+	ingredients, err := ingredientService.GetAllIngredients()
 
 	if err != nil {
-		log.Printf("error getting meals %v\n", err)
+		log.Printf("error getting ingredients %v\n", err)
 		return helpers.CreateInternalServerErrorResponse()
 	}
 
-	m := mealResponse{
-		Meal: meals[rand.Intn(len(meals))],
+	m := ingredientResponse{
+		Ingredients: ingredients,
 	}
 
 	data, err := json.Marshal(m)
@@ -83,13 +82,13 @@ func get(mealService meal.MealService) (events.APIGatewayProxyResponse, error) {
 	}, nil
 }
 
-type mealResponse struct {
-	Meal models.Meal `json:"meal"`
+type ingredientResponse struct {
+	Ingredients []models.Ingredient `json:"ingredients"`
 }
 
-func createMealResponse(meal models.Meal) (events.APIGatewayProxyResponse, error) {
-	resp := mealResponse{
-		Meal: meal,
+func createIngredientResponse(ingredients []models.Ingredient) (events.APIGatewayProxyResponse, error) {
+	resp := ingredientResponse{
+		Ingredients: ingredients,
 	}
 
 	data, err := json.Marshal(resp)

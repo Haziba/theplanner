@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	helpers "github.com/haziba/theplanner/helpers"
-	"github.com/haziba/theplanner/models"
+	"github.com/haziba/theplanner/models/food"
 )
 
 func handleRequest(context context.Context,

@@ -1,6 +1,6 @@
 package meal
 
-import "github.com/haziba/theplanner/models"
+import "github.com/haziba/theplanner/models/food"
 
 type MealService interface {
 	CreateMeal(models.Meal) (models.Meal, error)

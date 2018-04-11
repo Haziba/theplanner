@@ -8,34 +8,34 @@ Resources:
     Properties:
       Runtime: go1.x
       Handler: main
-      CodeUri: ./endpoints/meals
+      CodeUri: ./endpoints/food/meals
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /meals
+            Path: /food/meals
             Method: any
   Ingredients:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
       Handler: main
-      CodeUri: ./endpoints/ingredients
+      CodeUri: ./endpoints/food/ingredients
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /ingredients
+            Path: /food/ingredients
             Method: any
   MealPlanner:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
       Handler: main
-      CodeUri: ./endpoints/meal-planner
+      CodeUri: ./endpoints/food/meal-planner
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /meal-planner
+            Path: /food/meal-planner
             Method: any

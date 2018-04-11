@@ -1,6 +1,6 @@
 package ingredient
 
-import "github.com/haziba/theplanner/models"
+import "github.com/haziba/theplanner/models/food"
 
 type IngredientService interface {
 	CreateIngredient(models.Ingredient) (models.Ingredient, error)
