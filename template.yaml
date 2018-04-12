@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 
 Description: The Planner API
 Resources:
-  Meals:
+  Food/Meals:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
@@ -15,7 +15,7 @@ Resources:
           Properties:
             Path: /food/meals
             Method: any
-  Ingredients:
+  Food/Ingredients:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
@@ -27,7 +27,7 @@ Resources:
           Properties:
             Path: /food/ingredients
             Method: any
-  Planner:
+  Food/Planner:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
@@ -39,3 +39,4 @@ Resources:
           Properties:
             Path: /food/planner
             Method: any
+  
