@@ -68,8 +68,14 @@ func get(mealService meal.MealService) (events.APIGatewayProxyResponse, error) {
 		return helpers.CreateInternalServerErrorResponse()
 	}
 
+	var meal models.Meal
+
+	if len(meals) > 0 {
+		meal = meals[rand.Intn(len(meals))]
+	}
+
 	m := mealResponse{
-		Meal: meals[rand.Intn(len(meals))],
+		Meal: meal,
 	}
 
 	data, err := json.Marshal(m)
