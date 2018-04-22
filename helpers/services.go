@@ -5,6 +5,8 @@ import (
 	idb "github.com/haziba/theplanner/services/food/ingredient/dynamodb"
 	"github.com/haziba/theplanner/services/food/meal"
 	mdb "github.com/haziba/theplanner/services/food/meal/dynamodb"
+	"github.com/haziba/theplanner/services/money/log"
+	moneyLogDb "github.com/haziba/theplanner/services/money/log/dynamodb"
 	"github.com/pkg/errors"
 )
 
@@ -28,4 +30,15 @@ func CreateIngredientService() (ingredient.IngredientService, error) {
 	}
 
 	return idb.NewDynamoDBIngredientService(db), nil
+}
+
+func CreateMoneyLogService() (money.MoneyLogService, error) {
+	var service money.MoneyLogService
+
+	db, err := GetDynamoDBHandle()
+	if err != nil {
+		return service, errors.Wrap(err, "error getting db handle")
+	}
+
+	return moneyLogDb.NewDynamoDBMoneyLogService(db), nil
 }

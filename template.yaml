@@ -39,4 +39,16 @@ Resources:
           Properties:
             Path: /food/planner
             Method: any
+  Money/Log:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./endpoints/money/logs
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /money/logs
+            Method: any
   

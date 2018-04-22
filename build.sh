@@ -2,7 +2,7 @@
 
 set -e
 
-declare -a endpoints=("food/meals" "food/ingredients" "food/meal-planner")
+declare -a endpoints=("food/meals" "food/ingredients" "food/planner" "money/logs")
 
 for i in "${endpoints[@]}"
 do
