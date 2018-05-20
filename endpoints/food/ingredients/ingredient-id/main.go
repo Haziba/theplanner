@@ -4,12 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	helpers "github.com/haziba/theplanner/helpers"
-	"github.com/haziba/theplanner/models/food"
+	models "github.com/haziba/theplanner/models/food"
 	"github.com/haziba/theplanner/services/food/ingredient"
 )
 
@@ -20,7 +19,7 @@ func handleRequest(context context.Context,
 		return events.APIGatewayProxyResponse{
 			Headers: map[string]string{
 				"Access-Control-Allow-Origin":  "*",
-				"Access-Control-Allow-Methods": "POST",
+				"Access-Control-Allow-Methods": "PUT",
 				"Access-Control-Allow-Headers": "Content-Type",
 			},
 			StatusCode: 200,
@@ -33,14 +32,14 @@ func handleRequest(context context.Context,
 		return helpers.CreateInternalServerErrorResponse()
 	}
 
-	if request.HTTPMethod == "POST" {
-		return post(request, ingredientService)
+	if request.HTTPMethod == "PUT" {
+		return put(request, ingredientService)
 	}
 
-	return get(ingredientService)
+	return get(ingredientService, request.PathParameters["ingredient-id"])
 }
 
-func post(request events.APIGatewayProxyRequest, ingredientService ingredient.IngredientService) (events.APIGatewayProxyResponse, error) {
+func put(request events.APIGatewayProxyRequest, ingredientService ingredient.IngredientService) (events.APIGatewayProxyResponse, error) {
 	var i models.Ingredient
 
 	err := json.Unmarshal([]byte(request.Body), &i)
@@ -50,20 +49,11 @@ func post(request events.APIGatewayProxyRequest, ingredientService ingredient.In
 		return helpers.CreateBadRequestResponse()
 	}
 
-	_, err = ingredientService.CreateIngredient(i)
-	if err != nil {
-		log.Printf("error creating ingredient: %v\n", err)
-		return helpers.CreateBadRequestResponse()
-	}
-
-	data, err := json.Marshal(i)
-	if err != nil {
-		log.Printf("error marshalling ingredient: %v\n", err)
-		return helpers.CreateInternalServerErrorResponse()
-	}
+	ingredientService.UpdateIngredient(i)
+	log.Printf("Bblawkelkweutts butts")
 
 	return events.APIGatewayProxyResponse{
-		Body: string(data),
+		//Body:       string(data),
 		Headers: map[string]string{
 			"Access-Control-Allow-Origin": "*",
 		},
@@ -71,19 +61,20 @@ func post(request events.APIGatewayProxyRequest, ingredientService ingredient.In
 	}, nil
 }
 
-func get(ingredientService ingredient.IngredientService) (events.APIGatewayProxyResponse, error) {
-	ingredients, err := ingredientService.GetAllIngredients()
+func get(ingredientService ingredient.IngredientService, ingredientID string) (events.APIGatewayProxyResponse, error) {
+	ingredient, err := ingredientService.GetIngredient(ingredientID)
 
 	if err != nil {
 		log.Printf("error getting ingredients %v\n", err)
 		return helpers.CreateInternalServerErrorResponse()
 	}
 
-	m := ingredientResponse{
-		Ingredients: ingredients,
+	if ingredient == nil {
+		log.Printf("couldn't find ingredient %v\n", ingredientID)
+		return helpers.CreateNotFoundResponse()
 	}
 
-	data, err := json.Marshal(m)
+	data, err := json.Marshal(ingredient)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
@@ -94,30 +85,6 @@ func get(ingredientService ingredient.IngredientService) (events.APIGatewayProxy
 			"Access-Control-Allow-Origin": "*",
 		},
 		StatusCode: 200,
-	}, nil
-}
-
-type ingredientResponse struct {
-	Ingredients []models.Ingredient `json:"ingredients"`
-}
-
-func createIngredientResponse(ingredients []models.Ingredient) (events.APIGatewayProxyResponse, error) {
-	resp := ingredientResponse{
-		Ingredients: ingredients,
-	}
-
-	data, err := json.Marshal(resp)
-	if err != nil {
-		log.Printf("error marshalling response: %v\n", err)
-		return helpers.CreateInternalServerErrorResponse()
-	}
-
-	return events.APIGatewayProxyResponse{
-		Body: string(data),
-		Headers: map[string]string{
-			"Access-Control-Allow-Origin": "*",
-		},
-		StatusCode: http.StatusOK,
 	}, nil
 }
 

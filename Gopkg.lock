@@ -40,9 +40,13 @@
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
+    "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
     "service/dynamodb",
     "service/dynamodb/dynamodbattribute",
+    "service/s3",
+    "service/s3/s3iface",
+    "service/s3/s3manager",
     "service/sts"
   ]
   revision = "5a33d0a4f5d9c27e6cd10b4c156e85b46c4501d7"
@@ -66,6 +70,12 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/rhymond/go-money"
+  packages = ["."]
+  revision = "012e82b838f1b0ebd7b32acc842ba8a9ca20df05"
+  version = "v0.3.6"
+
+[[projects]]
   name = "github.com/satori/uuid"
   packages = ["."]
   revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
@@ -74,6 +84,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "531953acf823e6fa8fedf60e5136fecce2ec992bac8d71929a710b7a1702d2c6"
+  inputs-digest = "6e03e38815717c1815a21873f4f64d6c7148c86d0356a52f94c448588eb801f8"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -23,6 +23,13 @@ aws --region us-east-1 dynamodb create-table \
     --key-schema AttributeName=id,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
+aws --region us-east-1 dynamodb create-table \
+    --table-name tp-food-planner \
+    --attribute-definitions \
+        AttributeName=id,AttributeType=S \
+    --key-schema AttributeName=id,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+
 aws lambda create-function \
     --region us-east-1 \
     --function-name theplanner-food-meals \

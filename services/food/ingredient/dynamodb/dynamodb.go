@@ -21,11 +21,55 @@ func NewDynamoDBIngredientService(db *dynamodb.DynamoDB) DynamoDBIngredientServi
 	}
 }
 
+func (s DynamoDBIngredientService) GetIngredient(id string) (*models.Ingredient, error) {
+	input := &dynamodb.GetItemInput{
+		Key: map[string]*dynamodb.AttributeValue{
+			"id": {
+				S: aws.String(id),
+			},
+		},
+		TableName: aws.String(tableName),
+	}
+
+	output, err := s.db.GetItem(input)
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting ingredient")
+	}
+	if output.Item == nil {
+		return nil, nil
+	}
+
+	var i models.Ingredient
+	dynamodbattribute.UnmarshalMap(output.Item, &i)
+	if err != nil {
+		return nil, errors.Wrap(err, "error unmarshalling item")
+	}
+
+	return &i, nil
+}
+
 func (s DynamoDBIngredientService) CreateIngredient(i models.Ingredient) (models.Ingredient, error) {
 	if i.Id == "" {
 		i.Id = uuid.NewV4().String()
 	}
 
+	item, err := dynamodbattribute.MarshalMap(i)
+	if err != nil {
+		return i, errors.Wrap(err, "error marshalling ingredient")
+	}
+
+	_, err = s.db.PutItem(&dynamodb.PutItemInput{
+		Item:      item,
+		TableName: aws.String(tableName),
+	})
+	if err != nil {
+		return i, errors.Wrap(err, "error putting ingredient")
+	}
+
+	return i, nil
+}
+
+func (s DynamoDBIngredientService) UpdateIngredient(i models.Ingredient) (models.Ingredient, error) {
 	item, err := dynamodbattribute.MarshalMap(i)
 	if err != nil {
 		return i, errors.Wrap(err, "error marshalling ingredient")

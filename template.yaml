@@ -15,6 +15,18 @@ Resources:
           Properties:
             Path: /food/meals
             Method: any
+  Food/Meals/Meal-Id:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./endpoints/food/meals/meal-id
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /food/meals/{meal-id}
+            Method: any
   Food/Ingredients:
     Type: AWS::Serverless::Function
     Properties:
@@ -27,17 +39,41 @@ Resources:
           Properties:
             Path: /food/ingredients
             Method: any
-  Food/Planner:
+  Food/Ingredients/Ingredient-Id:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
       Handler: main
-      CodeUri: ./endpoints/food/planner
+      CodeUri: ./endpoints/food/ingredients/ingredient-id
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /food/planner
+            Path: /food/ingredients/{ingredient-id}
+            Method: any
+  Food/Planner/Build:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./endpoints/food/planner/build
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /food/planner/build
+            Method: any
+  Food/Planner/Save:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./endpoints/food/planner/save
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /food/planner/save
             Method: any
   Money/Log:
     Type: AWS::Serverless::Function
@@ -50,5 +86,17 @@ Resources:
           Type: Api
           Properties:
             Path: /money/logs
+            Method: any
+  Money2/Change:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./endpoints/money-event-sourced/money-change
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /money-2/change
             Method: any
   
