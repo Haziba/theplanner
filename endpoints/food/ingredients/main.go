@@ -16,6 +16,8 @@ import (
 func handleRequest(context context.Context,
 	request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
+	log.Printf("Holla holla!")
+
 	if request.HTTPMethod == "OPTIONS" {
 		return events.APIGatewayProxyResponse{
 			Headers: map[string]string{

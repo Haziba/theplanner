@@ -1,0 +1,1 @@
+aws --region us-east-1 codebuild create-project --name theplanner-food-ingredients --source 

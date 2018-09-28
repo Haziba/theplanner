@@ -1,0 +1,29 @@
+version: 0.2
+
+env:
+  parameter-store:
+    ITERATION: 1
+
+phases:
+  install:
+    commands:
+      - dep ensure
+
+  build:
+    commands:
+      - for file in $( find ./endpoints -name "*.go" ); do
+          echo "Building $file";
+          go build -o $(dirname "$file")/main $file;
+        done
+
+  post_build:
+    commands:
+      - for file in $( find ./endpoints -name "*.go" ); do
+          echo "Zipping $file";
+          zip $(dirname "$file")/deployment-v$ITERATION.zip $(dirname "$file")/main $file;
+        done
+
+artifacts:
+  files:
+    - ./**/*.zip
+    - ./template.yaml

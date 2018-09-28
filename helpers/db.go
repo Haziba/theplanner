@@ -18,7 +18,7 @@ func GetDynamoDBHandle() (*dynamodb.DynamoDB, error) {
 	} else {
 		sess, err = session.NewSession(&aws.Config{
 			Endpoint: aws.String("http://db:8000"),
-			Region:   aws.String("eu-west-2"),
+			Region:   aws.String("us-east-1"),
 		})
 	}
 	if err != nil {

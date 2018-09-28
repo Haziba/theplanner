@@ -10,9 +10,9 @@ do
 	GOOS=linux go build -o main
 
 	if [[ $(uname) == "MINGW"* ]]; then
-		~/go/bin/build-lambda-zip.exe -o deployment.zip main
+		~/go/bin/build-lambda-zip.exe -o -j deployment.zip main main.go
 	else
-		zip deployment.zip main
+		zip deployment.zip main main.go
 	fi
 
 	cd -

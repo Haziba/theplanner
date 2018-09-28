@@ -2,101 +2,209 @@ AWSTemplateFormatVersion : '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
 Description: The Planner API
+
+Parameters:
+  PolicyStackNameParameter:
+    Type: String
+    Default: theplanner-api-iam
+    Description: The name of the stack that declares this stacks IAM policy ARNs
+
 Resources:
-  Food/Meals:
+#  FoodMeals:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      Runtime: go1.x
+#      Handler: main
+#      CodeUri: 
+#      Events:
+#        Api:
+#          Type: Api 
+#          Properties:
+#            Path: /food/meals
+#            Method: any
+#  :
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      Runtime: go1.x
+#      Handler: main
+#      CodeUri: ./endpoints/food/meals/meal-id
+#      Events:
+#        Api:
+#          Type: Api
+#          Properties:
+#            Path: /food/meals/meal-id
+#            Method: any
+  FoodMealsMealIdFunction:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
-      Handler: main
-      CodeUri: ./endpoints/food/meals
+      Handler: endpoints/food/meals/meal-id/main
+      CodeUri: s3://theplanner/theplanner-api/endpoints/food/meals/meal-id/deployment.zip
+      Environment:
+        Variables: { "PROD":"true" }
+      Role:
+        Fn::ImportValue:
+          !Sub "${PolicyStackNameParameter}-ThePlannerApiFunctionRoleArn"
       Events:
-        Api:
+        ServerGet:
           Type: Api
           Properties:
-            Path: /food/meals
-            Method: any
-  Food/Meals/Meal-Id:
+            Path: /food/meals/meal-id
+            Method: get
+            RestApiId: !Ref ThePlannerApi
+
+  FoodIngredientsFunction:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
-      Handler: main
-      CodeUri: ./endpoints/food/meals/meal-id
+      Handler: endpoints/food/ingredients/main
+      CodeUri: s3://theplanner/theplanner-api/endpoints/food/ingredients/deployment.zip
+      Environment:
+        Variables: { "PROD":"true" }
+      Role:
+        Fn::ImportValue:
+          !Sub "${PolicyStackNameParameter}-ThePlannerApiFunctionRoleArn"
       Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /food/meals/{meal-id}
-            Method: any
-  Food/Ingredients:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: go1.x
-      Handler: main
-      CodeUri: ./endpoints/food/ingredients
-      Events:
-        Api:
+        ServerGet:
           Type: Api
           Properties:
             Path: /food/ingredients
-            Method: any
-  Food/Ingredients/Ingredient-Id:
+            Method: get
+            RestApiId: !Ref ThePlannerApi
+
+  FoodIngredientsIngredientIdFunction:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: go1.x
-      Handler: main
-      CodeUri: ./endpoints/food/ingredients/ingredient-id
+      Handler: endpoints/food/ingredients/ingredient-id/main
+      CodeUri: s3://theplanner/theplanner-api/endpoints/food/ingredients/ingredient-id/deployment.zip
+      Environment:
+        Variables: { "PROD":"true" }
+      Role:
+        Fn::ImportValue:
+          !Sub "${PolicyStackNameParameter}-ThePlannerApiFunctionRoleArn"
       Events:
-        Api:
+        ServerGet:
           Type: Api
           Properties:
-            Path: /food/ingredients/{ingredient-id}
-            Method: any
-  Food/Planner/Build:
-    Type: AWS::Serverless::Function
+            Path: /food/ingredients/ingredient-id
+            Method: get
+            RestApiId: !Ref ThePlannerApi
+
+  ThePlannerApi:
+    Type: AWS::Serverless::Api
     Properties:
-      Runtime: go1.x
-      Handler: main
-      CodeUri: ./endpoints/food/planner/build
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /food/planner/build
-            Method: any
-  Food/Planner/Save:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: go1.x
-      Handler: main
-      CodeUri: ./endpoints/food/planner/save
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /food/planner/save
-            Method: any
-  Money/Log:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: go1.x
-      Handler: main
-      CodeUri: ./endpoints/money/logs
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /money/logs
-            Method: any
-  Money2/Change:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: go1.x
-      Handler: main
-      CodeUri: ./endpoints/money-event-sourced/money-change
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /money-2/change
-            Method: any
+      StageName: Prod
+      DefinitionBody:
+        swagger: 2.0
+        info:
+          title: !Ref AWS::StackName
+        paths:
+          /food/meals/{meal-id}:
+            get:
+              produces:
+              - "application/json"
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FoodMealsMealIdFunction.Arn}/invocations"
+                responses:
+                  default:
+                    statusCode: "204"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+                requestParameters:
+                  method.request.path.meal-id: true
+          /food/ingredients:
+            get:
+              produces:
+              - "application/json"
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FoodIngredientsFunction.Arn}/invocations"
+                responses:
+                  default:
+                    statusCode: "204"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+          /food/ingredients/{ingredient-id}:
+            get:
+              produces:
+              - "application/json"
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FoodIngredientsIngredientIdFunction.Arn}/invocations"
+                responses:
+                  default:
+                    statusCode: "204"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+                requestParameters:
+                  method.request.path.ingredient-id: true
+            
+#  FoodIngredientsIngredientId:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      Runtime: go1.x
+#      Handler: main
+#      CodeUri: ./endpoints/food/ingredients/ingredient-id
+#      Events:
+#        Api:
+#          Type: Api
+#          Properties:
+#            Path: /food/ingredients/ingredient-id
+#            Method: any
+#  FoodPlannerBuild:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      Runtime: go1.x
+#      Handler: main
+#      CodeUri: ./endpoints/food/planner/build
+#      Events:
+#        Api:
+#          Type: Api
+#          Properties:
+#            Path: /food/planner/build
+#            Method: any
+#  FoodPlannerSave:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      Runtime: go1.x
+#      Handler: main
+#      CodeUri: ./endpoints/food/planner/save
+#      Events:
+#        Api:
+#          Type: Api
+#          Properties:
+#            Path: /food/planner/save
+#            Method: any
+#  MoneyLog:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      Runtime: go1.x
+#      Handler: main
+#      CodeUri: ./endpoints/money/logs
+#      Events:
+#        Api:
+#          Type: Api
+#          Properties:
+#            Path: /money/logs
+#            Method: any
+#  Money2Change:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      Runtime: go1.x
+#      Handler: main
+#      CodeUri: ./endpoints/money-event-sourced/money-change
+#      Events:
+#        Api:
+#          Type: Api
+#          Properties:
+#            Path: /money-2/change
+#            Method: any
   

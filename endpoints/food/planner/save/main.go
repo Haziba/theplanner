@@ -13,6 +13,7 @@ import (
 
 func handleRequest(context context.Context,
 	request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	log.Printf("Pomp")
 
 	if request.HTTPMethod == "OPTIONS" {
 		return events.APIGatewayProxyResponse{
@@ -43,7 +44,7 @@ func handleRequest(context context.Context,
 	}
 
 	ingredients, err := ingredientService.GetAllIngredients()
-
+	log.Printf("Holla dolla")
 	var planner models.Planner
 	var plannerIngredients []ChosenIngredient
 
@@ -60,6 +61,7 @@ func handleRequest(context context.Context,
 
 		planner.ChosenMeals = append(planner.ChosenMeals, plannerChosenMeal)
 	}
+	log.Printf("Bolla dolla")
 
 	plannerService, err := helpers.CreatePlannerService()
 	if err != nil {
@@ -68,6 +70,7 @@ func handleRequest(context context.Context,
 	}
 
 	plannerService.CreatePlanner(planner)
+	log.Printf("Create planner")
 
 	data, err := json.Marshal(plannerIngredients)
 	if err != nil {

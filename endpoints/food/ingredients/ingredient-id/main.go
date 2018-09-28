@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -14,6 +15,9 @@ import (
 
 func handleRequest(context context.Context,
 	request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	log.Printf("Butts lol\n")
+	log.Printf("%v\n", request.PathParameters)
 
 	if request.HTTPMethod == "OPTIONS" {
 		return events.APIGatewayProxyResponse{
@@ -48,9 +52,8 @@ func put(request events.APIGatewayProxyRequest, ingredientService ingredient.Ing
 		log.Printf("error unmarshalling ingredient: %v\n", err)
 		return helpers.CreateBadRequestResponse()
 	}
-
+	fmt.Printf("About to update %v", i)
 	ingredientService.UpdateIngredient(i)
-	log.Printf("Bblawkelkweutts butts")
 
 	return events.APIGatewayProxyResponse{
 		//Body:       string(data),

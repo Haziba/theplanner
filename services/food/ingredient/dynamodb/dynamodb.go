@@ -1,6 +1,8 @@
 package dynamodb
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
@@ -71,14 +73,16 @@ func (s DynamoDBIngredientService) CreateIngredient(i models.Ingredient) (models
 
 func (s DynamoDBIngredientService) UpdateIngredient(i models.Ingredient) (models.Ingredient, error) {
 	item, err := dynamodbattribute.MarshalMap(i)
+	fmt.Printf("Map marshalled")
 	if err != nil {
 		return i, errors.Wrap(err, "error marshalling ingredient")
 	}
-
+	fmt.Printf("PutItem %v", tableName)
 	_, err = s.db.PutItem(&dynamodb.PutItemInput{
 		Item:      item,
 		TableName: aws.String(tableName),
 	})
+	fmt.Printf("Post put")
 	if err != nil {
 		return i, errors.Wrap(err, "error putting ingredient")
 	}
@@ -90,7 +94,7 @@ func (s DynamoDBIngredientService) GetAllIngredients() ([]models.Ingredient, err
 	input := &dynamodb.ScanInput{
 		TableName: aws.String(tableName),
 	}
-
+	fmt.Printf("Table name %v\n", tableName)
 	output, err := s.db.Scan(input)
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting ingredients")

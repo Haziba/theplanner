@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'The Planner Roles And Policies'
+
+Resources:
+  ThePlannerApiFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+      - PolicyName: ThePlannerApiFunctionRolePolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Action:
+            - dynamodb:*
+            Resource: arn:aws:dynamodb:*:*:*
+            Effect: Allow
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+
+Outputs:
+  ThePlannerApiFunctionRoleArn:
+    Value:
+      Fn::GetAtt:
+      - ThePlannerApiFunctionRole
+      - Arn
+    Description: The ThePlannerApiFunctionRole Arn
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-ThePlannerApiFunctionRoleArn"
